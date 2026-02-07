@@ -42,21 +42,34 @@ class EventService {
     
     if (!isAdmin) {
       if (userId) {
-        filter.$or = filter.$or || [];
-        filter.$and = [
-          {
-            $or: [
-              { status: 'published' },
-              { organizer: userId }
-            ]
-          }
-        ];
-        if (filter.$or.length > 0) {
-          filter.$and.push({ $or: filter.$or });
+        const publishedOrOwner = {
+          $or: [
+            { status: 'published' },
+            { organizer: userId }
+          ]
+        };
+
+        if (filter.$or) {
+          // There's a search filter using $or - combine with $and
+          filter.$and = [
+            publishedOrOwner,
+            { $or: filter.$or }
+          ];
           delete filter.$or;
+        } else {
+          // No search filter, just add status/owner condition
+          Object.assign(filter, publishedOrOwner);
         }
       } else {
-        filter.status = 'published';
+        if (filter.$or) {
+          filter.$and = [
+            { status: 'published' },
+            { $or: filter.$or }
+          ];
+          delete filter.$or;
+        } else {
+          filter.status = 'published';
+        }
       }
     } else if (status) {
       filter.status = status;
@@ -134,10 +147,11 @@ class EventService {
     if (userId) {
       const registration = await Registration.findOne({ 
         event: eventId, 
-        user: userId 
+        user: userId,
+        status: 'confirmed'
       });
       eventObj.isRegistered = !!registration;
-      eventObj.registrationStatus = registration?.status;
+      eventObj.registrationStatus = registration?.status || null;
     }
 
     return eventObj;
@@ -199,6 +213,13 @@ class EventService {
 
     if (event.status !== 'published') {
       throw new AppError(ErrorCodes.EVENT_NOT_FOUND, 404);
+    }
+
+    // Vérifier si l'utilisateur est admin
+    const User = (await import('../models/User.js')).default;
+    const userDoc = await User.findById(userId);
+    if (userDoc && userDoc.role === 'admin') {
+      throw new AppError(ErrorCodes.FORBIDDEN, 403);
     }
 
     const existingRegistration = await Registration.findOne({

@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Upload, X, Image as ImageIcon } from 'lucide-react'
 import { cn } from '../../utils/helpers'
 import toast from 'react-hot-toast'
@@ -14,6 +14,10 @@ const FileUpload = ({
   const [preview, setPreview] = useState(currentFile || null)
   const [isDragging, setIsDragging] = useState(false)
   const fileInputRef = useRef(null)
+
+  useEffect(() => {
+    setPreview(currentFile || null)
+  }, [currentFile])
 
   const handleFileChange = (file) => {
     if (!file) return

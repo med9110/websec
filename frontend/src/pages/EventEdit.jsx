@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import EventForm from '../components/Events/EventForm'
 import eventService from '../services/eventService'
+import { getFileUrl } from '../utils/helpers'
 import toast from 'react-hot-toast'
 import { ArrowLeft } from 'lucide-react'
 import LoadingSpinner from '../components/UI/LoadingSpinner'
@@ -13,6 +14,9 @@ const EventEdit = () => {
   const [event, setEvent] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [coverFile, setCoverFile] = useState(null)
+  const [coverPreview, setCoverPreview] = useState(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   useEffect(() => {
     fetchEvent()
@@ -24,6 +28,10 @@ const EventEdit = () => {
       setError(null)
       const response = await eventService.getById(id)
       setEvent(response.data)
+      // Set existing cover image preview if available
+      if (response.data.coverImage) {
+        setCoverPreview(getFileUrl(response.data.coverImage._id || response.data.coverImage))
+      }
     } catch (err) {
       console.error('Erreur chargement événement:', err)
       setError('Impossible de charger l\'événement')
@@ -32,14 +40,40 @@ const EventEdit = () => {
     }
   }
 
+  const handleCoverChange = (file) => {
+    setCoverFile(file)
+    const reader = new FileReader()
+    reader.onloadend = () => setCoverPreview(reader.result)
+    reader.readAsDataURL(file)
+  }
+
+  const handleCoverRemove = () => {
+    setCoverFile(null)
+    setCoverPreview(null)
+  }
+
   const handleSubmit = async (data) => {
     try {
+      setIsSubmitting(true)
       await eventService.update(id, data)
+
+      // Upload new cover image if selected
+      if (coverFile) {
+        try {
+          await eventService.uploadCover(id, coverFile)
+        } catch (err) {
+          console.error('Erreur upload couverture:', err)
+          toast.error('Événement mis à jour mais l\'image n\'a pas pu être uploadée')
+        }
+      }
+
       toast.success('Événement mis à jour avec succès !')
       navigate(`/events/${id}`)
     } catch (err) {
       toast.error(err.response?.data?.message || 'Erreur lors de la mise à jour')
       throw err
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -85,9 +119,12 @@ const EventEdit = () => {
 
         {/* Formulaire */}
         <EventForm 
-          event={event}
+          initialData={event}
           onSubmit={handleSubmit}
-          isEditing
+          isLoading={isSubmitting}
+          coverImage={coverPreview}
+          onCoverChange={handleCoverChange}
+          onCoverRemove={handleCoverRemove}
         />
       </div>
     </div>

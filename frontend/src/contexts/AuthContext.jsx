@@ -69,7 +69,7 @@ export const AuthProvider = ({ children }) => {
       setUser(user)
       
       toast.success(`Bienvenue, ${user.firstName} !`)
-      navigate('/')
+      navigate('/dashboard')
       
       return { success: true }
     } catch (error) {

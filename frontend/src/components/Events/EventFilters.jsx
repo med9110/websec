@@ -54,7 +54,7 @@ const EventFilters = ({ filters, onFilterChange, showStatusFilter = false }) => 
             placeholder="Rechercher un événement..."
             value={localFilters.search || ''}
             onChange={(e) => handleInputChange('search', e.target.value)}
-            onKeyPress={handleKeyPress}
+            onKeyDown={handleKeyPress}
             className="input pl-10"
           />
         </div>

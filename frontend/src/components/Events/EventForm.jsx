@@ -217,7 +217,7 @@ const EventForm = ({
         </div>
 
         <div>
-          <label className="label">Prix (€)</label>
+          <label className="label">Prix (MAD)</label>
           <Controller
             name="price"
             control={control}

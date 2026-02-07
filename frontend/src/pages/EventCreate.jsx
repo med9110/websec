@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import EventForm from '../components/Events/EventForm'
 import eventService from '../services/eventService'
@@ -6,15 +7,45 @@ import { ArrowLeft } from 'lucide-react'
 
 const EventCreate = () => {
   const navigate = useNavigate()
+  const [coverFile, setCoverFile] = useState(null)
+  const [coverPreview, setCoverPreview] = useState(null)
+  const [isLoading, setIsLoading] = useState(false)
+
+  const handleCoverChange = (file) => {
+    setCoverFile(file)
+    const reader = new FileReader()
+    reader.onloadend = () => setCoverPreview(reader.result)
+    reader.readAsDataURL(file)
+  }
+
+  const handleCoverRemove = () => {
+    setCoverFile(null)
+    setCoverPreview(null)
+  }
 
   const handleSubmit = async (data) => {
     try {
+      setIsLoading(true)
       const response = await eventService.create(data)
+      const eventId = response.data._id
+
+      // Upload cover image if selected
+      if (coverFile) {
+        try {
+          await eventService.uploadCover(eventId, coverFile)
+        } catch (err) {
+          console.error('Erreur upload couverture:', err)
+          toast.error('Événement créé mais l\'image n\'a pas pu être uploadée')
+        }
+      }
+
       toast.success('Événement créé avec succès !')
-      navigate(`/events/${response.data._id}`)
+      navigate(`/events/${eventId}`)
     } catch (err) {
       toast.error(err.response?.data?.message || 'Erreur lors de la création')
       throw err
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -39,7 +70,13 @@ const EventCreate = () => {
         </div>
 
         {/* Formulaire */}
-        <EventForm onSubmit={handleSubmit} />
+        <EventForm 
+          onSubmit={handleSubmit}
+          isLoading={isLoading}
+          coverImage={coverPreview}
+          onCoverChange={handleCoverChange}
+          onCoverRemove={handleCoverRemove}
+        />
       </div>
     </div>
   )

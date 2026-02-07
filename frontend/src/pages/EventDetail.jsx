@@ -16,7 +16,6 @@ import {
   MapPin, 
   Users, 
   Clock, 
-  Euro,
   User,
   Edit,
   Trash2,
@@ -41,17 +40,18 @@ const EventDetail = () => {
   const [actionLoading, setActionLoading] = useState(false)
 
   const isOrganizer = user && event && (user.id === event.organizer?._id || user.role === 'admin')
+  const isAdmin = user?.role === 'admin'
   const isRegistered = event?.isRegistered
-  const canRegister = isAuthenticated && !isOrganizer && !isRegistered && !event?.isFull && event?.status === 'published'
+  const canRegister = isAuthenticated && !isOrganizer && !isAdmin && !isRegistered && !event?.isFull && event?.status === 'published'
   const canUnregister = isAuthenticated && isRegistered
 
   useEffect(() => {
     fetchEvent()
   }, [id])
 
-  const fetchEvent = async () => {
+  const fetchEvent = async (showLoading = true) => {
     try {
-      setLoading(true)
+      if (showLoading) setLoading(true)
       setError(null)
       const response = await eventService.getById(id)
       setEvent(response.data)
@@ -73,7 +73,7 @@ const EventDetail = () => {
       setActionLoading(true)
       await eventService.register(id)
       toast.success('Inscription réussie !')
-      fetchEvent()
+      fetchEvent(false)
     } catch (err) {
       toast.error(err.response?.data?.message || 'Erreur lors de l\'inscription')
     } finally {
@@ -86,7 +86,7 @@ const EventDetail = () => {
       setActionLoading(true)
       await eventService.unregister(id)
       toast.success('Désinscription réussie')
-      fetchEvent()
+      fetchEvent(false)
     } catch (err) {
       toast.error(err.response?.data?.message || 'Erreur lors de la désinscription')
     } finally {
@@ -332,6 +332,10 @@ const EventDetail = () => {
               ) : isOrganizer ? (
                 <p className="text-center text-sm text-gray-500">
                   Vous êtes l'organisateur de cet événement
+                </p>
+              ) : isAdmin ? (
+                <p className="text-center text-sm text-gray-500">
+                  Les administrateurs ne peuvent pas s'inscrire aux événements
                 </p>
               ) : null}
 

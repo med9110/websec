@@ -7,7 +7,6 @@ import { formatPrice, categoryLabels } from '../utils/helpers'
 import { 
   Calendar, 
   Users, 
-  Euro, 
   TrendingUp,
   ArrowRight,
   Plus
@@ -281,7 +280,7 @@ const Dashboard = () => {
                       {event.title}
                     </p>
                     <p className="text-sm text-gray-500">
-                      {categoryLabels[event.category]} • {event.registeredCount || 0} inscrit(s)
+                      {categoryLabels[event.category]} • {event.registrationCount || 0} inscrit(s)
                     </p>
                   </div>
                   <span className={`px-2 py-1 text-xs font-medium rounded-full ${
