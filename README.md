@@ -290,21 +290,3 @@ eventhub/
     ├── .env                 # Variables d'environnement
     └── package.json
 ```
-
-## Fonctionnalités testées
-
-- Inscription avec validation
-- Connexion et déconnexion
-- Refresh token automatique
-- CRUD complet des événements
-- Recherche et filtres avancés
-- Pagination serveur
-- Upload d'images
-- Dashboard avec graphiques
-- Gestion des inscriptions
-- Protection des routes
-- Gestion des erreurs
-
-## Licence
-
-Ce projet est développé dans un cadre éducatif (INE 3 - WebSec).
