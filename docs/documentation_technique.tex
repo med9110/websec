@@ -1,0 +1,688 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{positioning, shapes, arrows.meta, fit, calc, shapes.geometric}
+\usepackage{xcolor}
+\usepackage{amssymb}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{tocloft}
+\usepackage{titlesec}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+
+\geometry{margin=2.5cm}
+
+% Couleurs
+\definecolor{primary}{RGB}{79, 70, 229}
+\definecolor{secondary}{RGB}{99, 102, 241}
+\definecolor{darkgray}{RGB}{55, 65, 81}
+\definecolor{lightgray}{RGB}{243, 244, 246}
+\definecolor{codebg}{RGB}{249, 250, 251}
+
+% Style des liens
+\hypersetup{
+    colorlinks=true,
+    linkcolor=primary,
+    urlcolor=primary,
+    citecolor=primary
+}
+
+% En-tête et pied de page
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\textcolor{darkgray}{\small EventHub - Documentation Technique}}
+\fancyhead[R]{\textcolor{darkgray}{\small \thepage}}
+\fancyfoot[C]{\textcolor{darkgray}{\small INPT - DATA}}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+% Style des titres
+\titleformat{\section}{\Large\bfseries\color{primary}}{\thesection}{1em}{}
+\titleformat{\subsection}{\large\bfseries\color{secondary}}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalsize\bfseries\color{darkgray}}{\thesubsubsection}{1em}{}
+
+\begin{document}
+
+% Page de titre
+\begin{titlepage}
+    \centering
+    \vspace*{2cm}
+    
+    {\Huge\bfseries\textcolor{primary}{EventHub}\par}
+    \vspace{0.5cm}
+    {\Large Plateforme de Gestion d'Événements\par}
+    \vspace{2cm}
+    
+    {\LARGE\bfseries Documentation Technique\par}
+    \vspace{1cm}
+    
+    {\large Schéma de Base de Données\\
+    Diagramme de Classes\\
+    Diagrammes de Séquence\par}
+    
+    \vfill
+    
+    \begin{tabular}{ll}
+        \textbf{Module:} & Sécurité Web \\
+        \textbf{Filière:} & DATA \\
+        \textbf{Année:} & 2025-2026 \\
+    \end{tabular}
+    
+    \vspace{2cm}
+    
+    {\large Institut National des Postes et Télécommunications\par}
+    {\large Rabat, Maroc\par}
+    
+    \vspace{1cm}
+    {\small Janvier 2026}
+\end{titlepage}
+
+\newpage
+\tableofcontents
+\newpage
+
+% ============================================================================
+\section{Introduction}
+% ============================================================================
+
+Ce document présente la documentation technique de l'application \textbf{EventHub}, une plateforme complète de gestion d'événements développée avec une architecture MERN (MongoDB, Express.js, React, Node.js).
+
+\subsection{Architecture Générale}
+
+L'application suit une architecture trois tiers:
+\begin{itemize}
+    \item \textbf{Frontend}: Application React avec Vite, TailwindCSS
+    \item \textbf{Backend}: API REST Node.js avec Express.js
+    \item \textbf{Base de données}: MongoDB avec Mongoose ODM
+\end{itemize}
+
+\subsection{Technologies Utilisées}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Couche} & \textbf{Technologie} & \textbf{Version} \\
+\hline
+Frontend & React & 18.2.0 \\
+Frontend & Vite & 5.0.10 \\
+Frontend & TailwindCSS & 3.4.0 \\
+Frontend & React Router & 6.21.1 \\
+Backend & Node.js & 18+ \\
+Backend & Express.js & 4.18.2 \\
+Backend & Mongoose & 8.0.3 \\
+Base de données & MongoDB & 6.0+ \\
+Authentification & JWT & jsonwebtoken 9.0.2 \\
+\hline
+\end{tabular}
+\caption{Stack technologique}
+\end{table}
+
+\newpage
+% ============================================================================
+\section{Schéma de Base de Données}
+% ============================================================================
+
+\subsection{Modèle Entité-Relation}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    entity/.style={rectangle, draw=primary, fill=primary!10, thick, minimum width=2.5cm, minimum height=0.9cm},
+    relationship/.style={diamond, draw=primary, fill=primary!20, aspect=2.5, inner sep=1pt, font=\small},
+    every edge/.style={draw, thick},
+    node distance=2cm
+]
+
+% Entités - disposition en carré
+\node[entity] (user) {\textbf{User}};
+\node[entity, right=6cm of user] (event) {\textbf{Event}};
+\node[entity, below=5cm of user] (file) {\textbf{File}};
+\node[entity, below=5cm of event] (registration) {\textbf{Registration}};
+
+% Relations - positionnées pour éviter les chevauchements
+\node[relationship, right=2.5cm of user] (organizes) {organise};
+\node[relationship, below=2cm of event] (registers) {inscription};
+\node[relationship, below=2cm of user] (uploads) {upload};
+\node[relationship, below=2.5cm of organizes] (covers) {couverture};
+
+% Liens User-Event (organise)
+\draw[thick] (user) -- (organizes) node[midway, above] {1};
+\draw[thick] (organizes) -- (event) node[midway, above] {N};
+
+% Liens User-Registration et Event-Registration (inscription)
+\draw[thick] (user.south east) -- ++(0.5,-0.5) -- (registers.north west) node[pos=0.3, above] {1};
+\draw[thick] (event) -- (registers) node[midway, right] {1};
+\draw[thick] (registers) -- (registration) node[midway, right] {N};
+
+% Liens User-File (upload)
+\draw[thick] (user) -- (uploads) node[midway, left] {1};
+\draw[thick] (uploads) -- (file) node[midway, left] {N};
+
+% Liens File-Event (couverture)
+\draw[thick] (file) -- (covers) node[midway, below] {1};
+\draw[thick] (covers) -- (event) node[midway, right] {0..1};
+
+\end{tikzpicture}
+\caption{Diagramme Entité-Relation simplifié}
+\end{figure}
+
+\subsection{Collections MongoDB}
+
+\subsubsection{Collection: Users}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|l|l|}
+\hline
+\textbf{Champ} & \textbf{Type} & \textbf{Contraintes} & \textbf{Description} \\
+\hline
+\_id & ObjectId & PK, Auto & Identifiant unique \\
+email & String & Unique, Required & Adresse email \\
+password & String & Required, Min 8 & Mot de passe hashé (bcrypt) \\
+firstName & String & Required, Max 50 & Prénom \\
+lastName & String & Required, Max 50 & Nom de famille \\
+role & String & Enum: user, admin & Rôle utilisateur \\
+avatar & ObjectId & Ref: File & Photo de profil \\
+refreshToken & String & Select: false & Token de rafraîchissement \\
+isActive & Boolean & Default: true & Statut du compte \\
+createdAt & Date & Auto & Date de création \\
+updatedAt & Date & Auto & Date de modification \\
+\hline
+\end{tabular}
+\caption{Structure de la collection Users}
+\end{table}
+
+\subsubsection{Collection: Events}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|l|l|l|l|}
+\hline
+\textbf{Champ} & \textbf{Type} & \textbf{Contraintes} & \textbf{Description} \\
+\hline
+\_id & ObjectId & PK, Auto & Identifiant unique \\
+title & String & Required, Max 200 & Titre de l'événement \\
+description & String & Required, Max 5000 & Description détaillée \\
+category & String & Enum (6 valeurs) & Catégorie \\
+status & String & Enum (4 valeurs) & État de publication \\
+startDate & Date & Required & Date de début \\
+endDate & Date & Required, > startDate & Date de fin \\
+location.address & String & Required, Max 300 & Adresse \\
+location.city & String & Required, Max 100 & Ville \\
+location.postalCode & String & Max 20 & Code postal \\
+location.country & String & Default: France & Pays \\
+capacity & Number & Required, 1-100000 & Capacité maximale \\
+price & Number & Min: 0, Default: 0 & Prix en MAD \\
+coverImage & ObjectId & Ref: File & Image de couverture \\
+organizer & ObjectId & Ref: User, Required & Organisateur \\
+registrationCount & Number & Default: 0 & Nombre d'inscrits \\
+tags & [String] & Max 10 items & Tags/mots-clés \\
+\hline
+\end{tabular}
+\caption{Structure de la collection Events}
+\end{table}
+
+\textbf{Valeurs Enum pour category:} conference, workshop, concert, sport, networking, other
+
+\textbf{Valeurs Enum pour status:} draft, published, cancelled, completed
+
+\subsubsection{Collection: Registrations}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|l|l|}
+\hline
+\textbf{Champ} & \textbf{Type} & \textbf{Contraintes} & \textbf{Description} \\
+\hline
+\_id & ObjectId & PK, Auto & Identifiant unique \\
+user & ObjectId & Ref: User, Required & Utilisateur inscrit \\
+event & ObjectId & Ref: Event, Required & Événement concerné \\
+status & String & Enum (3 valeurs) & État de l'inscription \\
+registeredAt & Date & Default: now & Date d'inscription \\
+createdAt & Date & Auto & Date de création \\
+updatedAt & Date & Auto & Date de modification \\
+\hline
+\end{tabular}
+\caption{Structure de la collection Registrations}
+\end{table}
+
+\textbf{Index unique:} (user, event) - Empêche les inscriptions multiples
+
+\subsubsection{Collection: Files}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|l|l|}
+\hline
+\textbf{Champ} & \textbf{Type} & \textbf{Contraintes} & \textbf{Description} \\
+\hline
+\_id & ObjectId & PK, Auto & Identifiant unique \\
+originalName & String & Required & Nom original du fichier \\
+filename & String & Unique, Required & Nom stocké (UUID) \\
+mimeType & String & Required & Type MIME \\
+size & Number & Required & Taille en octets \\
+path & String & Required & Chemin de stockage \\
+uploadedBy & ObjectId & Ref: User, Required & Utilisateur uploader \\
+associatedWith.model & String & Enum: Event, User & Type d'entité liée \\
+associatedWith.id & ObjectId & Required & ID de l'entité liée \\
+isPublic & Boolean & Default: false & Visibilité publique \\
+\hline
+\end{tabular}
+\caption{Structure de la collection Files}
+\end{table}
+
+\subsection{Index de Base de Données}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Collection} & \textbf{Index} & \textbf{Type} \\
+\hline
+Users & email & Unique \\
+Users & role & Simple \\
+Users & createdAt & Descendant \\
+Events & title, description & Text \\
+Events & category & Simple \\
+Events & status & Simple \\
+Events & startDate & Simple \\
+Events & organizer & Simple \\
+Events & location.city & Simple \\
+Registrations & (user, event) & Unique Composé \\
+Registrations & event & Simple \\
+Registrations & user & Simple \\
+Files & uploadedBy & Simple \\
+Files & (associatedWith.model, associatedWith.id) & Composé \\
+\hline
+\end{tabular}
+\caption{Index de la base de données}
+\end{table}
+
+\newpage
+% ============================================================================
+\section{Diagramme de Classes}
+% ============================================================================
+
+\subsection{Architecture Backend}
+
+\begin{figure}[H]
+\centering
+\resizebox{\textwidth}{!}{
+\begin{tikzpicture}[
+    class/.style={rectangle, draw=primary, fill=white, thick, minimum width=3.5cm, text width=3.3cm, align=center, font=\footnotesize},
+    classheader/.style={rectangle, draw=primary, fill=primary!20, thick, minimum width=3.5cm, font=\bfseries\small},
+    arrow/.style={-{Stealth[length=2mm]}, thick},
+    node distance=0.3cm
+]
+
+% Models - Ligne 1
+\node[classheader] (usermodel) {User (Model)};
+\node[class, below=0 of usermodel] (userbody) {
+    - email: String\\
+    - password: String\\
+    - firstName: String\\
+    - lastName: String\\
+    - role: String\\
+    \hrule
+    + comparePassword()\\
+    + findByEmail()
+};
+
+\node[classheader, right=2.5cm of usermodel] (eventmodel) {Event (Model)};
+\node[class, below=0 of eventmodel] (eventbody) {
+    - title: String\\
+    - description: String\\
+    - category: String\\
+    - status: String\\
+    - startDate: Date\\
+    - capacity: Number\\
+    \hrule
+    + isFull: Virtual\\
+    + availableSpots: Virtual
+};
+
+% Services - Ligne 2
+\node[classheader, below=1.5cm of userbody] (authservice) {AuthService};
+\node[class, below=0 of authservice] (authbody) {
+    + register(userData)\\
+    + login(email, pwd)\\
+    + refreshToken(token)\\
+    + logout(userId)\\
+    - sanitizeUser(user)
+};
+
+\node[classheader, below=1.5cm of eventbody] (eventservice) {EventService};
+\node[class, below=0 of eventservice] (eventservicebody) {
+    + create(data, orgId)\\
+    + findAll(query)\\
+    + findById(id)\\
+    + update(id, data)\\
+    + delete(id)
+};
+
+% Controllers - Ligne 3
+\node[classheader, below=1.5cm of authbody] (authctrl) {AuthController};
+\node[class, below=0 of authctrl] (authctrlbody) {
+    + register(req, res)\\
+    + login(req, res)\\
+    + refresh(req, res)\\
+    + logout(req, res)
+};
+
+\node[classheader, below=1.5cm of eventservicebody] (eventctrl) {EventController};
+\node[class, below=0 of eventctrl] (eventctrlbody) {
+    + getEvents(req, res)\\
+    + getEvent(req, res)\\
+    + createEvent(req, res)\\
+    + updateEvent(req, res)
+};
+
+% Relations - flèches sur les côtés pour éviter le chevauchement
+\draw[arrow] (authctrl.west) -- ++(-0.5,0) |- (authservice.west);
+\draw[arrow] (eventctrl.east) -- ++(0.5,0) |- (eventservice.east);
+\draw[arrow] (authservice.west) -- ++(-0.8,0) |- (usermodel.west);
+\draw[arrow] (eventservice.east) -- ++(0.8,0) |- (eventmodel.east);
+
+\end{tikzpicture}
+}
+\caption{Diagramme de classes simplifié - Architecture MVC}
+\end{figure}
+
+\subsection{Middlewares}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    middleware/.style={rectangle, draw=secondary, fill=secondary!10, thick, minimum width=3.5cm, minimum height=1.2cm, text width=3.3cm, align=center},
+    node distance=1cm
+]
+
+\node[middleware] (auth) {\textbf{authenticate}\\Vérification JWT};
+\node[middleware, right=1cm of auth] (optauth) {\textbf{optionalAuth}\\Auth optionnelle};
+\node[middleware, right=1cm of optauth] (authorize) {\textbf{authorize}\\Contrôle RBAC};
+
+\node[middleware, below=1cm of auth] (validate) {\textbf{validate}\\Validation Joi};
+\node[middleware, right=1cm of validate] (upload) {\textbf{uploadSingle}\\Upload Multer};
+\node[middleware, right=1cm of upload] (error) {\textbf{errorHandler}\\Gestion erreurs};
+
+\end{tikzpicture}
+\caption{Middlewares de l'application}
+\end{figure}
+
+\newpage
+% ============================================================================
+\section{Diagrammes de Séquence}
+% ============================================================================
+
+\subsection{Authentification - Inscription}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    actor/.style={rectangle, draw=primary, fill=primary!10, minimum width=1.2cm, minimum height=0.7cm, font=\small},
+    component/.style={rectangle, draw=secondary, fill=secondary!10, minimum width=1.5cm, minimum height=0.7cm, font=\small},
+    lifeline/.style={dashed, gray},
+    message/.style={-{Stealth[length=2mm]}, thick},
+    return/.style={-{Stealth[length=2mm]}, thick, dashed},
+    note/.style={rectangle, draw=gray, fill=yellow!20, font=\small\itshape, text width=3cm, align=center}
+]
+
+% Acteurs et composants
+\node[actor] (client) {Client};
+\node[component, right=1.5cm of client] (controller) {Controller};
+\node[component, right=1.5cm of controller] (service) {Service};
+\node[component, right=1.5cm of service] (model) {Model};
+\node[component, right=1.5cm of model] (db) {MongoDB};
+
+% Lignes de vie
+\draw[lifeline] (client.south) -- ++(0,-10);
+\draw[lifeline] (controller.south) -- ++(0,-10);
+\draw[lifeline] (service.south) -- ++(0,-10);
+\draw[lifeline] (model.south) -- ++(0,-10);
+\draw[lifeline] (db.south) -- ++(0,-10);
+
+% Messages
+\draw[message] ([yshift=-1.5cm]client.south) -- ([yshift=-1.5cm]controller.south) node[midway, above, font=\small] {POST /register};
+\draw[message] ([yshift=-2.2cm]controller.south) -- ([yshift=-2.2cm]service.south) node[midway, above, font=\small] {register()};
+\draw[message] ([yshift=-2.9cm]service.south) -- ([yshift=-2.9cm]model.south) node[midway, above, font=\small] {findOne()};
+\draw[message] ([yshift=-3.6cm]model.south) -- ([yshift=-3.6cm]db.south) node[midway, above, font=\small] {query};
+\draw[return] ([yshift=-4.3cm]db.south) -- ([yshift=-4.3cm]model.south) node[midway, above, font=\small] {null};
+\draw[message] ([yshift=-5cm]service.south) -- ([yshift=-5cm]model.south) node[midway, above, font=\small] {create()};
+\draw[message] ([yshift=-5.7cm]model.south) -- ([yshift=-5.7cm]db.south) node[midway, above, font=\small] {insert};
+\draw[return] ([yshift=-6.4cm]db.south) -- ([yshift=-6.4cm]model.south) node[midway, above, font=\small] {user};
+\draw[return] ([yshift=-7.1cm]model.south) -- ([yshift=-7.1cm]service.south) node[midway, above, font=\small] {user};
+\draw[return] ([yshift=-7.8cm]service.south) -- ([yshift=-7.8cm]controller.south) node[midway, above, font=\small] {\{user, tokens\}};
+\draw[return] ([yshift=-8.5cm]controller.south) -- ([yshift=-8.5cm]client.south) node[midway, above, font=\small] {201 Created};
+
+\end{tikzpicture}
+\caption{Diagramme de séquence - Inscription utilisateur}
+\end{figure}
+
+\subsection{Authentification - Connexion}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    actor/.style={rectangle, draw=primary, fill=primary!10, minimum width=1.2cm, minimum height=0.7cm, font=\small},
+    component/.style={rectangle, draw=secondary, fill=secondary!10, minimum width=1.5cm, minimum height=0.7cm, font=\small},
+    lifeline/.style={dashed, gray},
+    message/.style={-{Stealth[length=2mm]}, thick},
+    return/.style={-{Stealth[length=2mm]}, thick, dashed}
+]
+
+\node[actor] (client) {Client};
+\node[component, right=1.5cm of client] (controller) {Controller};
+\node[component, right=1.5cm of controller] (service) {Service};
+\node[component, right=1.5cm of service] (model) {User};
+\node[component, right=1.5cm of model] (jwt) {JWT};
+
+\draw[lifeline] (client.south) -- ++(0,-9);
+\draw[lifeline] (controller.south) -- ++(0,-9);
+\draw[lifeline] (service.south) -- ++(0,-9);
+\draw[lifeline] (model.south) -- ++(0,-9);
+\draw[lifeline] (jwt.south) -- ++(0,-9);
+
+\draw[message] ([yshift=-1.5cm]client.south) -- ([yshift=-1.5cm]controller.south) node[midway, above, font=\small] {POST /login};
+\draw[message] ([yshift=-2.2cm]controller.south) -- ([yshift=-2.2cm]service.south) node[midway, above, font=\small] {login(email, pwd)};
+\draw[message] ([yshift=-2.9cm]service.south) -- ([yshift=-2.9cm]model.south) node[midway, above, font=\small] {findByEmail()};
+\draw[return] ([yshift=-3.6cm]model.south) -- ([yshift=-3.6cm]service.south) node[midway, above, font=\small] {user};
+\draw[message] ([yshift=-4.3cm]service.south) -- ([yshift=-4.3cm]model.south) node[midway, above, font=\small] {comparePassword()};
+\draw[return] ([yshift=-5cm]model.south) -- ([yshift=-5cm]service.south) node[midway, above, font=\small] {true};
+\draw[message] ([yshift=-5.7cm]service.south) -- ([yshift=-5.7cm]jwt.south) node[midway, above, font=\small] {generateTokens()};
+\draw[return] ([yshift=-6.4cm]jwt.south) -- ([yshift=-6.4cm]service.south) node[midway, above, font=\small] {tokens};
+\draw[return] ([yshift=-7.1cm]service.south) -- ([yshift=-7.1cm]controller.south) node[midway, above, font=\small] {\{user, tokens\}};
+\draw[return] ([yshift=-7.8cm]controller.south) -- ([yshift=-7.8cm]client.south) node[midway, above, font=\small] {200 OK};
+
+\end{tikzpicture}
+\caption{Diagramme de séquence - Connexion utilisateur}
+\end{figure}
+
+\subsection{Gestion des Événements - Création}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    actor/.style={rectangle, draw=primary, fill=primary!10, minimum width=1cm, minimum height=0.7cm, font=\small},
+    component/.style={rectangle, draw=secondary, fill=secondary!10, minimum width=1.3cm, minimum height=0.7cm, font=\small},
+    lifeline/.style={dashed, gray},
+    message/.style={-{Stealth[length=2mm]}, thick},
+    return/.style={-{Stealth[length=2mm]}, thick, dashed}
+]
+
+\node[actor] (client) {Client};
+\node[component, right=1cm of client] (auth) {Auth};
+\node[component, right=1cm of auth] (valid) {Valid};
+\node[component, right=1cm of valid] (ctrl) {Ctrl};
+\node[component, right=1cm of ctrl] (svc) {Svc};
+\node[component, right=1cm of svc] (db) {MongoDB};
+
+\draw[lifeline] (client.south) -- ++(0,-9);
+\draw[lifeline] (auth.south) -- ++(0,-9);
+\draw[lifeline] (valid.south) -- ++(0,-9);
+\draw[lifeline] (ctrl.south) -- ++(0,-9);
+\draw[lifeline] (svc.south) -- ++(0,-9);
+\draw[lifeline] (db.south) -- ++(0,-9);
+
+\draw[message] ([yshift=-1.2cm]client.south) -- ([yshift=-1.2cm]auth.south) node[midway, above, font=\scriptsize] {POST /events};
+\draw[message] ([yshift=-1.9cm]auth.south) -- ([yshift=-1.9cm]valid.south) node[midway, above, font=\scriptsize] {verify JWT};
+\draw[message] ([yshift=-2.6cm]valid.south) -- ([yshift=-2.6cm]ctrl.south) node[midway, above, font=\scriptsize] {validate};
+\draw[message] ([yshift=-3.3cm]ctrl.south) -- ([yshift=-3.3cm]svc.south) node[midway, above, font=\scriptsize] {create()};
+\draw[message] ([yshift=-4cm]svc.south) -- ([yshift=-4cm]db.south) node[midway, above, font=\scriptsize] {insert};
+\draw[return] ([yshift=-4.7cm]db.south) -- ([yshift=-4.7cm]svc.south) node[midway, above, font=\scriptsize] {event};
+\draw[message] ([yshift=-5.4cm]svc.south) -- ([yshift=-5.4cm]db.south) node[midway, above, font=\scriptsize] {populate};
+\draw[return] ([yshift=-6.1cm]db.south) -- ([yshift=-6.1cm]svc.south) node[midway, above, font=\scriptsize] {event+org};
+\draw[return] ([yshift=-6.8cm]svc.south) -- ([yshift=-6.8cm]ctrl.south) node[midway, above, font=\scriptsize] {event};
+\draw[return] ([yshift=-7.5cm]ctrl.south) -- ([yshift=-7.5cm]client.south) node[midway, above, font=\scriptsize] {201 Created};
+
+\end{tikzpicture}
+\caption{Diagramme de séquence - Création d'événement}
+\end{figure}
+
+\subsection{Inscription à un Événement}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    actor/.style={rectangle, draw=primary, fill=primary!10, minimum width=1.2cm, minimum height=0.7cm, font=\small},
+    component/.style={rectangle, draw=secondary, fill=secondary!10, minimum width=1.4cm, minimum height=0.7cm, font=\small},
+    lifeline/.style={dashed, gray},
+    message/.style={-{Stealth[length=2mm]}, thick},
+    return/.style={-{Stealth[length=2mm]}, thick, dashed},
+    alt/.style={rectangle, draw=gray, dashed, minimum width=8cm, minimum height=2cm}
+]
+
+\node[actor] (client) {Client};
+\node[component, right=1.2cm of client] (ctrl) {Controller};
+\node[component, right=1.2cm of ctrl] (svc) {Service};
+\node[component, right=1.2cm of svc] (event) {Event};
+\node[component, right=1.2cm of event] (reg) {Registr.};
+
+\draw[lifeline] (client.south) -- ++(0,-10);
+\draw[lifeline] (ctrl.south) -- ++(0,-10);
+\draw[lifeline] (svc.south) -- ++(0,-10);
+\draw[lifeline] (event.south) -- ++(0,-10);
+\draw[lifeline] (reg.south) -- ++(0,-10);
+
+\draw[message] ([yshift=-1.2cm]client.south) -- ([yshift=-1.2cm]ctrl.south) node[midway, above, font=\scriptsize] {POST /:id/register};
+\draw[message] ([yshift=-1.9cm]ctrl.south) -- ([yshift=-1.9cm]svc.south) node[midway, above, font=\scriptsize] {register()};
+\draw[message] ([yshift=-2.6cm]svc.south) -- ([yshift=-2.6cm]event.south) node[midway, above, font=\scriptsize] {findById()};
+\draw[return] ([yshift=-3.3cm]event.south) -- ([yshift=-3.3cm]svc.south) node[midway, above, font=\scriptsize] {event};
+\draw[message] ([yshift=-4cm]svc.south) -- ([yshift=-4cm]reg.south) node[midway, above, font=\scriptsize] {findOne()};
+\draw[return] ([yshift=-4.7cm]reg.south) -- ([yshift=-4.7cm]svc.south) node[midway, above, font=\scriptsize] {null};
+\draw[message] ([yshift=-5.4cm]svc.south) -- ([yshift=-5.4cm]reg.south) node[midway, above, font=\scriptsize] {create()};
+\draw[return] ([yshift=-6.1cm]reg.south) -- ([yshift=-6.1cm]svc.south) node[midway, above, font=\scriptsize] {registration};
+\draw[message] ([yshift=-6.8cm]svc.south) -- ([yshift=-6.8cm]event.south) node[midway, above, font=\scriptsize] {incrementReg()};
+\draw[return] ([yshift=-7.5cm]event.south) -- ([yshift=-7.5cm]svc.south) node[midway, above, font=\scriptsize] {event};
+\draw[return] ([yshift=-8.2cm]svc.south) -- ([yshift=-8.2cm]ctrl.south) node[midway, above, font=\scriptsize] {registration};
+\draw[return] ([yshift=-8.9cm]ctrl.south) -- ([yshift=-8.9cm]client.south) node[midway, above, font=\scriptsize] {201 Created};
+
+\end{tikzpicture}
+\caption{Diagramme de séquence - Inscription à un événement}
+\end{figure}
+
+\newpage
+% ============================================================================
+\section{Sécurité}
+% ============================================================================
+
+\subsection{Mécanismes d'Authentification}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Mécanisme} & \textbf{Implémentation} \\
+\hline
+Hashage mot de passe & bcrypt avec salt (12 rounds) \\
+Token d'accès & JWT signé (HS256), expire en 15min \\
+Token de rafraîchissement & JWT signé, expire en 7 jours \\
+Stockage refresh token & Base de données (champ user) \\
+\hline
+\end{tabular}
+\caption{Mécanismes d'authentification}
+\end{table}
+
+\subsection{Contrôle d'Accès (RBAC)}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Action} & \textbf{User} & \textbf{Admin} \\
+\hline
+Voir événements publiés & \checkmark & \checkmark \\
+Créer un événement & \checkmark & \checkmark \\
+Modifier ses événements & \checkmark & \checkmark \\
+Modifier tous les événements & & \checkmark \\
+S'inscrire à un événement & \checkmark & \checkmark \\
+Voir toutes les statistiques & & \checkmark \\
+Accéder aux stats admin & & \checkmark \\
+\hline
+\end{tabular}
+\caption{Matrice des permissions}
+\end{table}
+
+\subsection{Autres Mesures de Sécurité}
+
+\begin{itemize}
+    \item \textbf{Helmet}: Headers HTTP sécurisés
+    \item \textbf{CORS}: Configuration restrictive avec origine autorisée
+    \item \textbf{Rate Limiting}: 100 requêtes / 15 minutes par IP
+    \item \textbf{Validation}: Joi pour toutes les entrées utilisateur
+    \item \textbf{Upload}: Validation MIME type, limite de taille (5MB)
+\end{itemize}
+
+\newpage
+% ============================================================================
+\section{Annexes}
+% ============================================================================
+
+\subsection{Variables d'Environnement}
+
+\begin{lstlisting}[basicstyle=\small\ttfamily, frame=single, backgroundcolor=\color{codebg}]
+# Server
+PORT=5000
+NODE_ENV=development
+
+# Database
+MONGODB_URI=mongodb://localhost:27017/eventhub
+
+# JWT
+JWT_SECRET=your-secret-key
+JWT_EXPIRES_IN=15m
+JWT_REFRESH_SECRET=your-refresh-secret
+JWT_REFRESH_EXPIRES_IN=7d
+
+# Frontend
+FRONTEND_URL=http://localhost:5173
+
+# Upload
+UPLOAD_PATH=uploads
+MAX_FILE_SIZE=5242880
+\end{lstlisting}
+
+\subsection{Scripts NPM}
+
+\begin{lstlisting}[basicstyle=\small\ttfamily, frame=single, backgroundcolor=\color{codebg}]
+# Backend
+npm run dev          # Developpement avec nodemon
+npm start            # Production
+npm run seed         # Peupler la base de donnees
+
+# Frontend  
+npm run dev          # Serveur de developpement Vite
+npm run build        # Build de production
+npm run preview      # Preview du build
+\end{lstlisting}
+
+\end{document}

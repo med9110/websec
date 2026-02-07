@@ -1,0 +1,32 @@
+services:
+  - type: web
+    name: eventhub-backend
+    env: node
+    region: frankfurt
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 15m
+      - key: JWT_REFRESH_EXPIRES_IN
+        value: 7d
+      - key: FRONTEND_URL
+        sync: false
+      - key: UPLOAD_PATH
+        value: uploads
+      - key: MAX_FILE_SIZE
+        value: 5242880
+      - key: ALLOWED_MIME_TYPES
+        value: image/jpeg,image/png,image/gif,image/webp,application/pdf

@@ -1,0 +1,656 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{geometry}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{fontawesome5}
+\usepackage{hyperref}
+
+\geometry{margin=2cm}
+
+% Couleurs
+\definecolor{primary}{RGB}{79, 70, 229}
+\definecolor{action}{RGB}{34, 197, 94}
+\definecolor{speech}{RGB}{59, 130, 246}
+\definecolor{note}{RGB}{234, 179, 8}
+\definecolor{darkgray}{RGB}{55, 65, 81}
+
+% Styles des boîtes
+\newtcolorbox{actionbox}[1][]{
+    colback=action!10,
+    colframe=action,
+    fonttitle=\bfseries,
+    title={\faMousePointer\ Action à effectuer},
+    #1
+}
+
+\newtcolorbox{speechbox}[1][]{
+    colback=speech!10,
+    colframe=speech,
+    fonttitle=\bfseries,
+    title={\faMicrophone\ Ce qu'il faut dire},
+    #1
+}
+
+\newtcolorbox{notebox}[1][]{
+    colback=note!10,
+    colframe=note,
+    fonttitle=\bfseries,
+    title={\faLightbulb\ Note importante},
+    #1
+}
+
+\newtcolorbox{timebox}[1][]{
+    colback=darkgray!10,
+    colframe=darkgray,
+    fonttitle=\bfseries,
+    title={\faClock\ Durée estimée},
+    #1
+}
+
+% En-tête et pied de page
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\textcolor{darkgray}{\small Script Démo Vidéo - EventHub}}
+\fancyhead[R]{\textcolor{darkgray}{\small \thepage}}
+\fancyfoot[C]{\textcolor{darkgray}{\small INPT - DATA}}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+% Style des titres
+\titleformat{\section}{\Large\bfseries\color{primary}}{\thesection}{1em}{}
+\titleformat{\subsection}{\large\bfseries\color{darkgray}}{\thesubsection}{1em}{}
+
+\begin{document}
+
+% Page de titre
+\begin{titlepage}
+    \centering
+    \vspace*{2cm}
+    
+    {\Huge\bfseries\textcolor{primary}{EventHub}\par}
+    \vspace{0.5cm}
+    {\Large Plateforme de Gestion d'Événements\par}
+    \vspace{2cm}
+    
+    {\LARGE\bfseries Script de Démonstration Vidéo\par}
+    \vspace{1cm}
+    
+    {\large Guide complet étape par étape\\
+    pour la présentation de l'application\par}
+    
+    \vfill
+    
+    \begin{tabular}{ll}
+        \textbf{Module:} & Sécurité Web \\
+        \textbf{Filière:} & DATA \\
+        \textbf{Année:} & 2025-2026 \\
+    \end{tabular}
+    
+    \vspace{2cm}
+    
+    {\large Institut National des Postes et Télécommunications\par}
+    {\large Rabat, Maroc\par}
+    
+    \vspace{1cm}
+    {\small Janvier 2026}
+\end{titlepage}
+
+\newpage
+\tableofcontents
+\newpage
+
+% ============================================================================
+\section{Préparation Avant l'Enregistrement}
+% ============================================================================
+
+\begin{timebox}
+Temps de préparation : \textbf{10-15 minutes}
+\end{timebox}
+
+\subsection{Vérifications Techniques}
+
+\begin{actionbox}
+\begin{enumerate}[leftmargin=*]
+    \item Lancer MongoDB : \texttt{mongod} ou démarrer le service MongoDB
+    \item Ouvrir un terminal dans le dossier \texttt{backend/} et exécuter :
+    \begin{verbatim}
+    npm run dev
+    \end{verbatim}
+    \item Ouvrir un autre terminal dans \texttt{frontend/} et exécuter :
+    \begin{verbatim}
+    npm run dev
+    \end{verbatim}
+    \item Ouvrir le navigateur sur \texttt{http://localhost:5173}
+    \item Vérifier que l'application fonctionne correctement
+    \item Peupler la base de données (optionnel) :
+    \begin{verbatim}
+    cd backend && npm run seed
+    \end{verbatim}
+\end{enumerate}
+\end{actionbox}
+
+\subsection{Configuration de l'Enregistrement}
+
+\begin{notebox}
+\begin{itemize}[leftmargin=*]
+    \item Utiliser un logiciel comme \textbf{OBS Studio}, \textbf{Camtasia} ou \textbf{Loom}
+    \item Résolution recommandée : \textbf{1920x1080} (Full HD)
+    \item Fermer toutes les applications inutiles
+    \item Désactiver les notifications
+    \item Préparer un micro de bonne qualité
+    \item Parler clairement et à un rythme modéré
+\end{itemize}
+\end{notebox}
+
+\newpage
+% ============================================================================
+\section{Introduction (30 secondes)}
+% ============================================================================
+
+\begin{timebox}
+Durée : \textbf{30 secondes}
+\end{timebox}
+
+\begin{actionbox}
+Afficher la page d'accueil de l'application dans le navigateur.
+\end{actionbox}
+
+\begin{speechbox}
+<<Bonjour, je vous présente aujourd'hui \textbf{EventHub}, une application web de gestion d'événements que j'ai développée dans le cadre du module de Sécurité Web.
+
+Cette application est construite avec une architecture \textbf{MERN Stack}, c'est-à-dire MongoDB pour la base de données, Express.js pour le backend, React pour le frontend, et Node.js pour l'environnement serveur.
+
+Je vais vous montrer les principales fonctionnalités de l'application.>>
+\end{speechbox}
+
+\newpage
+% ============================================================================
+\section{Présentation de la Page d'Accueil (1 minute)}
+% ============================================================================
+
+\begin{timebox}
+Durée : \textbf{1 minute}
+\end{timebox}
+
+\begin{actionbox}
+\begin{enumerate}[leftmargin=*]
+    \item Rester sur la page d'accueil
+    \item Faire défiler lentement la page pour montrer le contenu
+    \item Montrer la barre de navigation
+    \item Cliquer sur <<Voir les événements>>
+\end{enumerate}
+\end{actionbox}
+
+\begin{speechbox}
+<<Voici la page d'accueil de l'application. On peut voir :
+
+\begin{itemize}
+    \item Une \textbf{barre de navigation} en haut avec le logo, les liens vers les différentes pages, et les boutons de connexion et d'inscription.
+    \item Une section \textbf{héro} avec un message d'accueil et un bouton pour accéder aux événements.
+    \item Une présentation des \textbf{fonctionnalités principales} de la plateforme.
+\end{itemize}
+
+L'interface est moderne et responsive, elle s'adapte à toutes les tailles d'écran. Je vais maintenant vous montrer la liste des événements.>>
+\end{speechbox}
+
+\newpage
+% ============================================================================
+\section{Liste des Événements (1 minute 30)}
+% ============================================================================
+
+\begin{timebox}
+Durée : \textbf{1 minute 30 secondes}
+\end{timebox}
+
+\begin{actionbox}
+\begin{enumerate}[leftmargin=*]
+    \item Afficher la page des événements (\texttt{/events})
+    \item Montrer les cartes d'événements
+    \item Utiliser la barre de recherche pour chercher un événement
+    \item Filtrer par catégorie (ex: <<Conference>>)
+    \item Montrer la pagination s'il y a plusieurs pages
+    \item Cliquer sur un événement pour voir les détails
+\end{enumerate}
+\end{actionbox}
+
+\begin{speechbox}
+<<Sur cette page, on peut voir la liste de tous les événements publiés sur la plateforme.
+
+Chaque événement est affiché sous forme de \textbf{carte} avec :
+\begin{itemize}
+    \item L'image de couverture
+    \item Le titre et la catégorie
+    \item La date et le lieu
+    \item Le prix et le nombre de places disponibles
+\end{itemize}
+
+On dispose de plusieurs outils pour trouver un événement :
+\begin{itemize}
+    \item Une \textbf{barre de recherche} pour chercher par mot-clé
+    \item Des \textbf{filtres par catégorie} : conférence, workshop, concert, sport, networking
+    \item Un \textbf{tri} par date ou par prix
+\end{itemize}
+
+Voyons maintenant le détail d'un événement en cliquant dessus.>>
+\end{speechbox}
+
+\newpage
+% ============================================================================
+\section{Détail d'un Événement (1 minute)}
+% ============================================================================
+
+\begin{timebox}
+Durée : \textbf{1 minute}
+\end{timebox}
+
+\begin{actionbox}
+\begin{enumerate}[leftmargin=*]
+    \item Afficher la page de détail d'un événement
+    \item Faire défiler pour montrer toutes les informations
+    \item Montrer le bouton <<S'inscrire>> (qui demande de se connecter)
+\end{enumerate}
+\end{actionbox}
+
+\begin{speechbox}
+<<Voici la page de détail d'un événement. On y trouve toutes les informations importantes :
+
+\begin{itemize}
+    \item L'\textbf{image de couverture} en grand format
+    \item Le \textbf{titre} et la \textbf{catégorie} de l'événement
+    \item La \textbf{description complète}
+    \item Les \textbf{dates} de début et de fin
+    \item Le \textbf{lieu} avec l'adresse complète
+    \item Le \textbf{prix} et la \textbf{capacité} maximale
+    \item Le nombre de \textbf{places restantes}
+    \item Les informations sur l'\textbf{organisateur}
+\end{itemize}
+
+Pour s'inscrire à un événement, il faut d'abord être connecté. Je vais donc vous montrer le processus d'inscription et de connexion.>>
+\end{speechbox}
+
+\newpage
+% ============================================================================
+\section{Inscription d'un Utilisateur (1 minute 30)}
+% ============================================================================
+
+\begin{timebox}
+Durée : \textbf{1 minute 30 secondes}
+\end{timebox}
+
+\begin{actionbox}
+\begin{enumerate}[leftmargin=*]
+    \item Cliquer sur <<S'inscrire>> dans la barre de navigation
+    \item Remplir le formulaire avec des données de test :
+    \begin{itemize}
+        \item Prénom : \texttt{Ahmed}
+        \item Nom : \texttt{Benjelloun}
+        \item Email : \texttt{ahmed.test@email.com}
+        \item Mot de passe : \texttt{Password123!}
+        \item Confirmation : \texttt{Password123!}
+    \end{itemize}
+    \item Cliquer sur <<S'inscrire>>
+    \item Montrer la redirection vers le tableau de bord
+\end{enumerate}
+\end{actionbox}
+
+\begin{speechbox}
+<<Je vais maintenant créer un nouveau compte utilisateur.
+
+Le formulaire d'inscription demande :
+\begin{itemize}
+    \item Le \textbf{prénom} et le \textbf{nom}
+    \item Une \textbf{adresse email} valide
+    \item Un \textbf{mot de passe} sécurisé d'au moins 8 caractères
+\end{itemize}
+
+Côté sécurité, le mot de passe est \textbf{hashé avec bcrypt} avant d'être stocké en base de données. Personne, même l'administrateur, ne peut voir les mots de passe en clair.
+
+Après l'inscription, l'utilisateur est automatiquement connecté et redirigé vers son tableau de bord. Un \textbf{token JWT} est généré pour maintenir la session.>>
+\end{speechbox}
+
+\newpage
+% ============================================================================
+\section{Connexion d'un Utilisateur (45 secondes)}
+% ============================================================================
+
+\begin{timebox}
+Durée : \textbf{45 secondes}
+\end{timebox}
+
+\begin{notebox}
+Si vous venez de vous inscrire, vous pouvez vous déconnecter d'abord pour montrer le processus de connexion, ou passer cette étape.
+\end{notebox}
+
+\begin{actionbox}
+\begin{enumerate}[leftmargin=*]
+    \item Se déconnecter (cliquer sur le menu utilisateur puis <<Déconnexion>>)
+    \item Cliquer sur <<Se connecter>>
+    \item Entrer les identifiants :
+    \begin{itemize}
+        \item Email : \texttt{ahmed.test@email.com}
+        \item Mot de passe : \texttt{Password123!}
+    \end{itemize}
+    \item Cliquer sur <<Se connecter>>
+\end{enumerate}
+\end{actionbox}
+
+\begin{speechbox}
+<<Pour se connecter, il suffit d'entrer son email et son mot de passe.
+
+Le système utilise une authentification par \textbf{JWT (JSON Web Tokens)} :
+\begin{itemize}
+    \item Un \textbf{access token} de courte durée (15 minutes) pour les requêtes
+    \item Un \textbf{refresh token} de longue durée (7 jours) pour renouveler l'access token
+\end{itemize}
+
+Cette approche est plus sécurisée que les sessions traditionnelles et permet une meilleure scalabilité.>>
+\end{speechbox}
+
+\newpage
+% ============================================================================
+\section{Création d'un Événement (2 minutes)}
+% ============================================================================
+
+\begin{timebox}
+Durée : \textbf{2 minutes}
+\end{timebox}
+
+\begin{actionbox}
+\begin{enumerate}[leftmargin=*]
+    \item Cliquer sur <<Créer un événement>> dans la navigation ou le tableau de bord
+    \item Remplir le formulaire :
+    \begin{itemize}
+        \item Titre : \texttt{Workshop Intelligence Artificielle}
+        \item Catégorie : \texttt{Workshop}
+        \item Description : \texttt{Un atelier pratique sur les fondamentaux de l'IA et du Machine Learning. Venez découvrir les outils et techniques modernes.}
+        \item Date début : (choisir une date future)
+        \item Date fin : (quelques heures après)
+        \item Adresse : \texttt{INPT, Avenue Allal El Fassi}
+        \item Ville : \texttt{Rabat}
+        \item Capacité : \texttt{50}
+        \item Prix : \texttt{0} (gratuit)
+    \end{itemize}
+    \item Ajouter une image de couverture (drag and drop ou clic)
+    \item Cliquer sur <<Publier l'événement>>
+\end{enumerate}
+\end{actionbox}
+
+\begin{speechbox}
+<<En tant qu'utilisateur connecté, je peux créer mes propres événements.
+
+Le formulaire de création est complet et permet de définir :
+\begin{itemize}
+    \item Les \textbf{informations de base} : titre, catégorie, description
+    \item Les \textbf{dates} de début et de fin avec validation (la fin doit être après le début)
+    \item La \textbf{localisation} complète
+    \item La \textbf{capacité} et le \textbf{prix}
+    \item Une \textbf{image de couverture} avec upload de fichier
+\end{itemize}
+
+Toutes les données sont \textbf{validées côté serveur} avec Joi pour garantir leur intégrité. L'upload d'image est sécurisé avec vérification du type MIME et limite de taille à 5 Mo.
+
+L'événement est maintenant créé et visible dans la liste !>>
+\end{speechbox}
+
+\newpage
+% ============================================================================
+\section{Inscription à un Événement (1 minute)}
+% ============================================================================
+
+\begin{timebox}
+Durée : \textbf{1 minute}
+\end{timebox}
+
+\begin{actionbox}
+\begin{enumerate}[leftmargin=*]
+    \item Aller sur la page des événements
+    \item Choisir un événement (différent de celui qu'on a créé)
+    \item Cliquer sur <<S'inscrire>>
+    \item Montrer la confirmation d'inscription
+    \item Aller dans <<Mes inscriptions>> pour voir l'inscription
+\end{enumerate}
+\end{actionbox}
+
+\begin{speechbox}
+<<Je vais maintenant m'inscrire à un événement.
+
+Il suffit de cliquer sur le bouton <<S'inscrire>> sur la page de détail. Le système vérifie automatiquement :
+\begin{itemize}
+    \item Que l'utilisateur n'est pas déjà inscrit
+    \item Qu'il reste des places disponibles
+    \item Que l'événement n'est pas annulé ou terminé
+\end{itemize}
+
+Une fois inscrit, je peux voir tous mes événements dans la section <<Mes inscriptions>>. Je peux aussi me désinscrire si je change d'avis.
+
+Le compteur de places disponibles est mis à jour en temps réel.>>
+\end{speechbox}
+
+\newpage
+% ============================================================================
+\section{Gestion de Mes Événements (1 minute)}
+% ============================================================================
+
+\begin{timebox}
+Durée : \textbf{1 minute}
+\end{timebox}
+
+\begin{actionbox}
+\begin{enumerate}[leftmargin=*]
+    \item Cliquer sur <<Mes événements>> dans le menu
+    \item Montrer la liste des événements créés
+    \item Cliquer sur <<Modifier>> pour un événement
+    \item Faire une petite modification (ex: changer la capacité)
+    \item Sauvegarder
+    \item Montrer le bouton <<Supprimer>> (sans cliquer)
+\end{enumerate}
+\end{actionbox}
+
+\begin{speechbox}
+<<Dans la section <<Mes événements>>, je retrouve tous les événements que j'ai créés en tant qu'organisateur.
+
+Pour chaque événement, je peux :
+\begin{itemize}
+    \item \textbf{Voir} les détails et le nombre d'inscrits
+    \item \textbf{Modifier} les informations
+    \item \textbf{Supprimer} l'événement si nécessaire
+\end{itemize}
+
+Les modifications sont soumises aux mêmes validations que la création. Seul l'organisateur ou un administrateur peut modifier un événement.>>
+\end{speechbox}
+
+\newpage
+% ============================================================================
+\section{Tableau de Bord et Statistiques (1 minute)}
+% ============================================================================
+
+\begin{timebox}
+Durée : \textbf{1 minute}
+\end{timebox}
+
+\begin{actionbox}
+\begin{enumerate}[leftmargin=*]
+    \item Cliquer sur <<Tableau de bord>> dans le menu
+    \item Montrer les statistiques affichées
+    \item Montrer les graphiques s'il y en a
+    \item Faire défiler pour voir toutes les informations
+\end{enumerate}
+\end{actionbox}
+
+\begin{speechbox}
+<<Le tableau de bord offre une vue d'ensemble de mon activité sur la plateforme.
+
+On y trouve des \textbf{statistiques personnalisées} :
+\begin{itemize}
+    \item Le nombre d'événements que j'ai créés
+    \item Le nombre total d'inscriptions à mes événements
+    \item Mes propres inscriptions à d'autres événements
+    \item Les événements à venir
+\end{itemize}
+
+Ces données sont calculées en temps réel par l'API backend et permettent de suivre facilement son activité.>>
+\end{speechbox}
+
+\newpage
+% ============================================================================
+\section{Fonctionnalités Administrateur (1 minute 30)}
+% ============================================================================
+
+\begin{timebox}
+Durée : \textbf{1 minute 30 secondes}
+\end{timebox}
+
+\begin{notebox}
+Pour cette section, il faut se connecter avec un compte administrateur. Si vous avez utilisé le seed, les identifiants sont :\\
+Email : \texttt{admin@eventhub.com}\\
+Mot de passe : \texttt{Admin123!}
+\end{notebox}
+
+\begin{actionbox}
+\begin{enumerate}[leftmargin=*]
+    \item Se déconnecter du compte utilisateur actuel
+    \item Se connecter avec le compte admin
+    \item Montrer le tableau de bord admin avec les statistiques globales
+    \item Montrer qu'on peut voir/modifier tous les événements
+    \item Montrer les statistiques avancées
+\end{enumerate}
+\end{actionbox}
+
+\begin{speechbox}
+<<L'application dispose d'un système de \textbf{rôles} avec contrôle d'accès RBAC.
+
+En tant qu'administrateur, j'ai accès à des fonctionnalités supplémentaires :
+\begin{itemize}
+    \item \textbf{Statistiques globales} de la plateforme
+    \item \textbf{Gestion de tous les événements}, pas seulement les miens
+    \item \textbf{Vue d'ensemble} des utilisateurs et inscriptions
+\end{itemize}
+
+Le contrôle d'accès est géré côté serveur avec des middlewares qui vérifient le rôle de l'utilisateur avant chaque action sensible. Impossible de contourner ces restrictions depuis le frontend.>>
+\end{speechbox}
+
+\newpage
+% ============================================================================
+\section{Aspects Sécurité (1 minute)}
+% ============================================================================
+
+\begin{timebox}
+Durée : \textbf{1 minute}
+\end{timebox}
+
+\begin{actionbox}
+\begin{enumerate}[leftmargin=*]
+    \item Ouvrir les DevTools du navigateur (F12)
+    \item Montrer l'onglet Network pour voir les requêtes API
+    \item Montrer l'onglet Application > Local Storage pour voir les tokens
+    \item Fermer les DevTools
+\end{enumerate}
+\end{actionbox}
+
+\begin{speechbox}
+<<Je voudrais souligner les \textbf{mesures de sécurité} implémentées dans l'application :
+
+\textbf{Authentification :}
+\begin{itemize}
+    \item Mots de passe hashés avec \textbf{bcrypt} (12 rounds)
+    \item Tokens \textbf{JWT} signés avec clé secrète
+    \item Système de \textbf{refresh token} pour limiter l'exposition
+\end{itemize}
+
+\textbf{Protection des données :}
+\begin{itemize}
+    \item \textbf{Validation} de toutes les entrées avec Joi
+    \item \textbf{Helmet} pour les headers HTTP sécurisés
+    \item \textbf{CORS} configuré pour n'accepter que le frontend autorisé
+    \item \textbf{Rate limiting} pour prévenir les attaques par force brute
+\end{itemize}
+
+\textbf{Contrôle d'accès :}
+\begin{itemize}
+    \item Middleware d'authentification sur les routes protégées
+    \item Vérification des permissions (RBAC)
+    \item Validation de la propriété des ressources
+\end{itemize}
+>>
+\end{speechbox}
+
+\newpage
+% ============================================================================
+\section{Conclusion (30 secondes)}
+% ============================================================================
+
+\begin{timebox}
+Durée : \textbf{30 secondes}
+\end{timebox}
+
+\begin{actionbox}
+\begin{enumerate}[leftmargin=*]
+    \item Revenir sur la page d'accueil
+    \item Rester sur cette page pendant la conclusion
+\end{enumerate}
+\end{actionbox}
+
+\begin{speechbox}
+<<Pour conclure, \textbf{EventHub} est une application web complète de gestion d'événements qui démontre :
+
+\begin{itemize}
+    \item Une architecture \textbf{MERN Stack} moderne et scalable
+    \item Des bonnes pratiques de \textbf{sécurité web}
+    \item Une interface utilisateur \textbf{intuitive et responsive}
+    \item Un système d'\textbf{authentification robuste}
+    \item Une \textbf{API REST} bien structurée
+\end{itemize}
+
+Merci pour votre attention. Je reste disponible pour toute question.>>
+\end{speechbox}
+
+\newpage
+% ============================================================================
+\section{Récapitulatif des Durées}
+% ============================================================================
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|c|}
+\hline
+\textbf{Section} & \textbf{Durée} \\
+\hline
+Introduction & 30 sec \\
+Page d'accueil & 1 min \\
+Liste des événements & 1 min 30 \\
+Détail d'un événement & 1 min \\
+Inscription utilisateur & 1 min 30 \\
+Connexion & 45 sec \\
+Création d'événement & 2 min \\
+Inscription à un événement & 1 min \\
+Mes événements & 1 min \\
+Tableau de bord & 1 min \\
+Fonctionnalités admin & 1 min 30 \\
+Aspects sécurité & 1 min \\
+Conclusion & 30 sec \\
+\hline
+\textbf{TOTAL} & \textbf{$\sim$ 14 minutes} \\
+\hline
+\end{tabular}
+\caption{Durées estimées par section}
+\end{table}
+
+\begin{notebox}
+\textbf{Conseils pour l'enregistrement :}
+\begin{itemize}[leftmargin=*]
+    \item Faites un ou deux essais avant l'enregistrement final
+    \item Parlez lentement et clairement
+    \item N'hésitez pas à faire des pauses
+    \item Si vous faites une erreur, continuez ou recommencez la section
+    \item Vérifiez le son et la qualité vidéo avant de commencer
+    \item Gardez ce script à portée de main pendant l'enregistrement
+\end{itemize}
+\end{notebox}
+
+\end{document}
